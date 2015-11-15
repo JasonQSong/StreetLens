@@ -84,7 +84,7 @@ public class FullscreenActivity extends AppCompatActivity {
 //        mCamera=getCameraInstance();
 //        mCameraPreview=new CameraPreview(this,mCamera);
 //        mFrameLayoutCam.addView(mCameraPreview);
-        InitAccelerator();
+        InitOrientation();
     }
 
     @Override
@@ -220,30 +220,51 @@ public class FullscreenActivity extends AppCompatActivity {
     ////ACCELERATOR
     private DeviceParameterModel mDeviceParameter=new DeviceParameterModel();
 
-    void InitAccelerator(){
+    private SensorManager sm;
+    private Sensor accelerometerSensor;
+    private Sensor magneticSensor;
 
-        SensorManager sm = (SensorManager) this.getSystemService(SENSOR_SERVICE);
-        final Sensor accelerometerSensor = sm.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
-
-
+    void InitOrientation(){
+        sm = (SensorManager) this.getSystemService(SENSOR_SERVICE);
+        accelerometerSensor = sm.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
+        magneticSensor = sm.getDefaultSensor(Sensor.TYPE_MAGNETIC_FIELD);
         sm.registerListener(new SensorEventListener() {
             @Override
             public void onSensorChanged(SensorEvent event) {
-                mDeviceParameter.accelerator_x = event.values[SensorManager.DATA_X];
-                mDeviceParameter.accelerator_y = event.values[SensorManager.DATA_Y];
-                mDeviceParameter.accelerator_z = event.values[SensorManager.DATA_Z];
-                try {
-                    Log.d("StreetLensAccelerator", mDeviceParameter.toJson().toString());
-                }catch (JSONException e){
-
-                    e.printStackTrace();
+                if(event.sensor==accelerometerSensor){
+                    System.arraycopy(event.values,0,mDeviceParameter.accelerator,0,event.values.length);
+                    sm.getRotationMatrix(mDeviceParameter.R,null,mDeviceParameter.accelerator,mDeviceParameter.magnetor);
+                    sm.getOrientation(mDeviceParameter.R,mDeviceParameter.orientation);
+                    try {
+                        Log.d("StreetLensAccelerator", mDeviceParameter.toJson().toString());
+                    }catch (JSONException e){
+                        e.printStackTrace();
+                    }
                 }
             }
-
             @Override
             public void onAccuracyChanged(Sensor sensor, int accuracy) {
             }
         }, accelerometerSensor, SensorManager.SENSOR_DELAY_FASTEST);
+
+        sm.registerListener(new SensorEventListener() {
+            @Override
+            public void onSensorChanged(SensorEvent event) {
+                if(event.sensor==magneticSensor){
+                    System.arraycopy(event.values,0,mDeviceParameter.magnetor,0,event.values.length);
+                    sm.getRotationMatrix(mDeviceParameter.R,null,mDeviceParameter.accelerator,mDeviceParameter.magnetor);
+                    sm.getOrientation(mDeviceParameter.R,mDeviceParameter.orientation);
+                    try {
+                        Log.d("StreetLensMagnetor", mDeviceParameter.toJson().toString());
+                    }catch (JSONException e){
+                        e.printStackTrace();
+                    }
+                }
+            }
+            @Override
+            public void onAccuracyChanged(Sensor sensor, int accuracy) {
+            }
+        }, magneticSensor, SensorManager.SENSOR_DELAY_FASTEST);
     }
 
 }
