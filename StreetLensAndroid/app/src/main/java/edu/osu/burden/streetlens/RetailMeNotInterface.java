@@ -38,12 +38,13 @@ public class RetailMeNotInterface {
     public JSONArray stores;
 
     public void Fetch(Location location, double radius) {
-        Log.w("StreetLensRetailMeNot", "Enter");
+        if(location==null)
+            return;
         String url = "https://ci78qvkdja.execute-api.us-west-2.amazonaws.com/prod/stores/nearby?lat=" + location.getLatitude() + "&lon=" + location.getLongitude() + "&radius=" + radius;
         StringRequest jsonObjectRequest = new StringRequest(Request.Method.GET, url,  new Response.Listener<String>() {
             @Override
             public void onResponse(String response) {
-                Log.w("StreetLensRetailMeNot", response.toString());
+                Log.d("StreetLensRetailMeNot", response.toString());
                 try {
                     stores = new JSONArray(response);
                 }catch (JSONException e){
@@ -54,7 +55,7 @@ public class RetailMeNotInterface {
         }, new Response.ErrorListener() {
             @Override
             public void onErrorResponse(VolleyError error) {
-                Log.w("StreetLensRetailError", error.networkResponse.statusCode + "");
+                Log.e("StreetLensRetailError", error.networkResponse.statusCode + "");
                 error.printStackTrace();
             }
 

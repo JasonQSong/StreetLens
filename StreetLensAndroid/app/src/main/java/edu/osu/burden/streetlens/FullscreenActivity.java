@@ -21,7 +21,9 @@ import android.view.View;
 import android.hardware.Camera;
 import android.widget.FrameLayout;
 
+import org.json.JSONArray;
 import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.util.Date;
 import java.util.Timer;
@@ -91,11 +93,8 @@ public class FullscreenActivity extends AppCompatActivity {
 //        mFrameLayoutCam.addView(mCameraPreview);
         InitOrientation();
         InitLocation();
-        RetailMeNotInterface rmni=new RetailMeNotInterface(this);
-        Location location=new Location(LocationManager.NETWORK_PROVIDER);
-        location.setLatitude(40.01419);
-        location.setLongitude(-83.03310);
-        rmni.Fetch(location,4);
+        InitRetailMeNot();
+        InitTimer();
     }
 
     @Override
@@ -307,23 +306,72 @@ public class FullscreenActivity extends AppCompatActivity {
         }
 
     }
+    RetailMeNotInterface rmni;
+    void InitRetailMeNot(){
+
+        rmni=new RetailMeNotInterface(this);
+        rmni.Fetch(mDeviceParameter.location,1);
+    }
+    private DeviceArgumentModel mDeviceArgumentModel=new DeviceArgumentModel();
     private Timer UITimer;
     void InitTimer(){
+        //TODO
+//        mDeviceArgumentModel.XPixelPerRad=100;
+//        mDeviceArgumentModel.YPixelPerRad=100;
+//        mDeviceArgumentModel.ScreenWidthPixel=480;
+//        mDeviceArgumentModel.ScreenHeightPixel=320;
+
         UITimer=new Timer();
         UITimer.schedule(new TimerTask() {
             @Override
             public void run() {
+
                 RefreshUI();
             }
-        },1000,100);
+        },1000,1000);
     }
+
+    final double PI=3.1416;
     void RefreshUI(){
-        //TODO
+        rmni.Fetch(mDeviceParameter.location,2);
+        if(rmni.stores==null)
+            return;
+        try {
+            double[] ScreenXArray,ScreenYArray;
+            String[] StoreNameArray,SubtitleArray;
+            int len=rmni.stores.length();
+            ScreenXArray=new double[len];
+            ScreenYArray=new double[len];
+            StoreNameArray=new String[len];
+            SubtitleArray=new String[len];
+            for (int i = 0; i < rmni.stores.length(); i++) {
+                JSONObject store =(JSONObject) rmni.stores.get(i);
+                Location storeLocation=new Location(LocationManager.GPS_PROVIDER);
+                storeLocation.setLongitude(((JSONArray) store.get("loc")).getDouble(0));
+                storeLocation.setLatitude(((JSONArray) store.get("loc")).getDouble(1));
+                double storeAngle=mDeviceParameter.location.bearingTo(storeLocation);
+                double screenXAngle=storeAngle-mDeviceParameter.orientation[0];
+                double screenYAngle=-mDeviceParameter.orientation[2]-PI/2;
+                double screenXPixel=mDeviceArgumentModel.ScreenWidthPixel/2+screenXAngle*mDeviceArgumentModel.XPixelPerRad;
+                double screenYPixel=mDeviceArgumentModel.ScreenHeightPixel/2+screenYAngle*mDeviceArgumentModel.XPixelPerRad;
+                String StoreName=store.get("name").toString();
+                String Subtitle="";
+                try {
+                    Subtitle += ((JSONArray) store.get("offers")).length();
+                }catch (JSONException e){
+                    Log.d("StreetLensStore","No offers for "+StoreName);
+                }
+                Log.w("StreetLensStore" ,StoreName+"/"+Subtitle+"/"+screenXPixel+"/"+screenYPixel);
+            }
+        }catch (JSONException e){
+            e.printStackTrace();
+        }
     }
+
 
     ////THIS IS THE BEGIN OF DRAW FUNC
     void DrawTag(int screen_x, int screen_y,String StoreName, String Subtitle){
-        
+
     }
     ////THIS IS THE END OF DRAW FUNC
 

@@ -16,6 +16,11 @@ public class DeviceParameterModel {
     public float[] magnetor=new float[3];
     public float[] R=new float[9];
     public float[] orientation=new float[3];
+    public DeviceParameterModel(){
+        location=new Location(LocationManager.GPS_PROVIDER);
+        location.setLatitude(40.014195);
+        location.setLongitude(-83.033103);
+    }
     public JSONObject toJson() throws JSONException {
         JSONObject object = new JSONObject();
         object.put("a_x", accelerator[0]);
