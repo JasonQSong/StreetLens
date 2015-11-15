@@ -24,6 +24,8 @@ import android.widget.FrameLayout;
 import org.json.JSONException;
 
 import java.util.Date;
+import java.util.Timer;
+import java.util.TimerTask;
 
 /**
  * An example full-screen activity that shows and hides the system UI (i.e.
@@ -89,6 +91,11 @@ public class FullscreenActivity extends AppCompatActivity {
 //        mFrameLayoutCam.addView(mCameraPreview);
         InitOrientation();
         InitLocation();
+        RetailMeNotInterface rmni=new RetailMeNotInterface(this);
+        Location location=new Location(LocationManager.NETWORK_PROVIDER);
+        location.setLatitude(40.01419);
+        location.setLongitude(-83.03310);
+        rmni.Fetch(location,4);
     }
 
     @Override
@@ -299,6 +306,16 @@ public class FullscreenActivity extends AppCompatActivity {
             e.printStackTrace();
         }
 
+    }
+    private Timer UITimer;
+    void InitTimer(){
+        UITimer=new Timer();
+        UITimer.schedule(new TimerTask() {
+            @Override
+            public void run() {
+                
+            }
+        },1000,100);
     }
 
 }
