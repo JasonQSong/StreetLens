@@ -3,6 +3,7 @@ package edu.osu.burden.streetlens;
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.pm.PackageManager;
+import android.hardware.Camera;
 import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
@@ -10,20 +11,17 @@ import android.hardware.SensorManager;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
-import android.support.v7.app.ActionBar;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.os.Handler;
+import android.support.v7.app.ActionBar;
+import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.MotionEvent;
-import android.view.SurfaceView;
 import android.view.View;
-import android.hardware.Camera;
 import android.widget.FrameLayout;
 
 import org.json.JSONException;
 
-import java.util.Date;
 import java.util.Timer;
 import java.util.TimerTask;
 
@@ -322,8 +320,10 @@ public class FullscreenActivity extends AppCompatActivity {
     }
 
     ////THIS IS THE BEGIN OF DRAW FUNC
-    void DrawTag(int screen_x, int screen_y,String StoreName, String Subtitle){
-        
+    void DrawTag(float[] screen_x, float[] screen_y,String[] StoreName, String[] Subtitle){
+        FrameLayout root=(FrameLayout)findViewById(R.id.root);
+        root.addView(new MyView(FullscreenActivity.this,screen_x,screen_y,StoreName,Subtitle));
+
     }
     ////THIS IS THE END OF DRAW FUNC
 
