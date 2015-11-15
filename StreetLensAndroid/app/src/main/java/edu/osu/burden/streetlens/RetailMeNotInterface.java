@@ -44,6 +44,7 @@ public class RetailMeNotInterface {
         StringRequest jsonObjectRequest = new StringRequest(Request.Method.GET, url,  new Response.Listener<String>() {
             @Override
             public void onResponse(String response) {
+                response="[{\"_id\":\"1\",\"loc\":[-83,40.01],\"address\":{},\"name\":\"test\",\"offers\":[{}]}]";
                 Log.d("StreetLensRetailMeNot", response.toString());
                 try {
                     stores = new JSONArray(response);

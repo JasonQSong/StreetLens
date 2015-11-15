@@ -18,8 +18,8 @@ public class DeviceParameterModel {
     public float[] orientation=new float[3];
     public DeviceParameterModel(){
         location=new Location(LocationManager.GPS_PROVIDER);
-        location.setLatitude(40.014195);
-        location.setLongitude(-83.033103);
+        location.setLatitude(40);
+        location.setLongitude(-83);
     }
     public JSONObject toJson() throws JSONException {
         JSONObject object = new JSONObject();

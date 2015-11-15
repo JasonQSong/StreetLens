@@ -60,6 +60,8 @@ public class FullscreenActivity extends AppCompatActivity {
     private boolean mVisible;
     private double mAccelerator;
 
+    private boolean FAKEDATA=true;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -245,8 +247,13 @@ public class FullscreenActivity extends AppCompatActivity {
                     System.arraycopy(event.values,0,mDeviceParameter.accelerator,0,event.values.length);
                     sm.getRotationMatrix(mDeviceParameter.R,null,mDeviceParameter.accelerator,mDeviceParameter.magnetor);
                     sm.getOrientation(mDeviceParameter.R,mDeviceParameter.orientation);
+                    if(FAKEDATA){
+                        mDeviceParameter.orientation[0]=0;
+                        mDeviceParameter.orientation[1]=0;
+                        mDeviceParameter.orientation[2]=(float)-1.57;
+                    }
                     try {
-                        Log.d("StreetLensAccelerator", mDeviceParameter.toJson().toString());
+                        Log.v("StreetLensAccelerator", mDeviceParameter.toJson().toString());
                     }catch (JSONException e){
                         e.printStackTrace();
                     }
@@ -261,11 +268,16 @@ public class FullscreenActivity extends AppCompatActivity {
             @Override
             public void onSensorChanged(SensorEvent event) {
                 if(event.sensor==magneticSensor){
-                    System.arraycopy(event.values,0,mDeviceParameter.magnetor,0,event.values.length);
-                    sm.getRotationMatrix(mDeviceParameter.R,null,mDeviceParameter.accelerator,mDeviceParameter.magnetor);
+                    System.arraycopy(event.values, 0, mDeviceParameter.magnetor, 0, event.values.length);
+                    sm.getRotationMatrix(mDeviceParameter.R, null, mDeviceParameter.accelerator, mDeviceParameter.magnetor);
                     sm.getOrientation(mDeviceParameter.R,mDeviceParameter.orientation);
+                    if(FAKEDATA){
+                        mDeviceParameter.orientation[0]=0;
+                        mDeviceParameter.orientation[1]=0;
+                        mDeviceParameter.orientation[2]=(float)-1.57;
+                    }
                     try {
-                        Log.d("StreetLensMagnetor", mDeviceParameter.toJson().toString());
+                        Log.v("StreetLensMagnetor", mDeviceParameter.toJson().toString());
                     }catch (JSONException e){
                         e.printStackTrace();
                     }
@@ -283,6 +295,10 @@ public class FullscreenActivity extends AppCompatActivity {
                     LocationListener locationListener=new  LocationListener() {
                 @Override
                 public void onLocationChanged(Location location) {
+                    if(FAKEDATA){
+                        location.setLatitude(40);
+                        location.setLongitude(-83);
+                    }
                     mDeviceParameter.location=location;
                     Log.w("StreetLensLocation",mDeviceParameter.location.getLatitude()+","+mDeviceParameter.location.getLongitude());
                 }
@@ -349,11 +365,13 @@ public class FullscreenActivity extends AppCompatActivity {
                 Location storeLocation=new Location(LocationManager.GPS_PROVIDER);
                 storeLocation.setLongitude(((JSONArray) store.get("loc")).getDouble(0));
                 storeLocation.setLatitude(((JSONArray) store.get("loc")).getDouble(1));
+                Log.d("DeviceLoc",mDeviceParameter.location.toString());
+                Log.d("StoreLoc",storeLocation.toString());
                 double storeAngle=mDeviceParameter.location.bearingTo(storeLocation);
                 double screenXAngle=storeAngle-mDeviceParameter.orientation[0];
                 double screenYAngle=-mDeviceParameter.orientation[2]-PI/2;
-                double screenXPixel=mDeviceArgumentModel.ScreenWidthPixel/2+screenXAngle*mDeviceArgumentModel.XPixelPerRad;
-                double screenYPixel=mDeviceArgumentModel.ScreenHeightPixel/2+screenYAngle*mDeviceArgumentModel.XPixelPerRad;
+                double screenXPixel=screenXAngle*mDeviceArgumentModel.XPixelPerRad;
+                double screenYPixel=screenYAngle*mDeviceArgumentModel.YPixelPerRad;
                 String StoreName=store.get("name").toString();
                 String Subtitle="";
                 try {
@@ -361,7 +379,7 @@ public class FullscreenActivity extends AppCompatActivity {
                 }catch (JSONException e){
                     Log.d("StreetLensStore","No offers for "+StoreName);
                 }
-                Log.w("StreetLensStore" ,StoreName+"/"+Subtitle+"/"+screenXPixel+"/"+screenYPixel);
+                Log.w("StreetLensStore" ,StoreName+"/"+storeAngle+"/"+Subtitle+"/"+screenXPixel+"/"+screenYPixel);
             }
         }catch (JSONException e){
             e.printStackTrace();
