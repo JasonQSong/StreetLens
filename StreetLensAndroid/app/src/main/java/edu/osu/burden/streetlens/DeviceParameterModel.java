@@ -1,5 +1,9 @@
 package edu.osu.burden.streetlens;
 
+import android.location.Location;
+import android.location.LocationManager;
+import android.location.LocationProvider;
+
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -7,8 +11,7 @@ import org.json.JSONObject;
  * Created by jason on 11/14/2015.
  */
 public class DeviceParameterModel {
-    public double longitude=0;
-    public double latitude=0;
+    public Location location;
     public float[] accelerator=new float[3];
     public float[] magnetor=new float[3];
     public float[] R=new float[9];

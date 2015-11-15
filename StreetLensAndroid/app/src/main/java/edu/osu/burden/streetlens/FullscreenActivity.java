@@ -7,6 +7,9 @@ import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
+import android.location.Location;
+import android.location.LocationListener;
+import android.location.LocationManager;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -85,6 +88,7 @@ public class FullscreenActivity extends AppCompatActivity {
 //        mCameraPreview=new CameraPreview(this,mCamera);
 //        mFrameLayoutCam.addView(mCameraPreview);
         InitOrientation();
+        InitLocation();
     }
 
     @Override
@@ -265,6 +269,36 @@ public class FullscreenActivity extends AppCompatActivity {
             public void onAccuracyChanged(Sensor sensor, int accuracy) {
             }
         }, magneticSensor, SensorManager.SENSOR_DELAY_FASTEST);
+    }
+    void InitLocation(){
+        LocationManager lm=(LocationManager)this.getSystemService(LOCATION_SERVICE);
+        // Register the listener with the Location Manager to receive location updates
+        try {
+                    LocationListener locationListener=new  LocationListener() {
+                @Override
+                public void onLocationChanged(Location location) {
+                    mDeviceParameter.location=location;
+                    Log.w("StreetLensLocation",mDeviceParameter.location.getLatitude()+","+mDeviceParameter.location.getLongitude());
+                }
+
+                @Override
+                public void onStatusChanged(String provider, int status, Bundle extras) {
+                }
+
+                @Override
+                public void onProviderEnabled(String provider) {
+                }
+
+                @Override
+                public void onProviderDisabled(String provider) {
+                }
+            };
+            lm.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 0, 0, locationListener);
+            lm.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0, 0, locationListener);
+        }catch (SecurityException e){
+            e.printStackTrace();
+        }
+
     }
 
 }
