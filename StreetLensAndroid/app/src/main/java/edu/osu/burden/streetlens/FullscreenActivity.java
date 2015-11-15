@@ -313,9 +313,18 @@ public class FullscreenActivity extends AppCompatActivity {
         UITimer.schedule(new TimerTask() {
             @Override
             public void run() {
-                
+                RefreshUI();
             }
         },1000,100);
     }
+    void RefreshUI(){
+        //TODO
+    }
+
+    ////THIS IS THE BEGIN OF DRAW FUNC
+    void DrawTag(int screen_x, int screen_y,String StoreName, String Subtitle){
+        
+    }
+    ////THIS IS THE END OF DRAW FUNC
 
 }
