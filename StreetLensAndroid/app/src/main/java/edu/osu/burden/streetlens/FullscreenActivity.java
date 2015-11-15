@@ -3,15 +3,24 @@ package edu.osu.burden.streetlens;
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.pm.PackageManager;
+import android.hardware.Sensor;
+import android.hardware.SensorEvent;
+import android.hardware.SensorEventListener;
+import android.hardware.SensorManager;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.os.Handler;
+import android.util.Log;
 import android.view.MotionEvent;
 import android.view.SurfaceView;
 import android.view.View;
 import android.hardware.Camera;
 import android.widget.FrameLayout;
+
+import org.json.JSONException;
+
+import java.util.Date;
 
 /**
  * An example full-screen activity that shows and hides the system UI (i.e.
@@ -42,6 +51,7 @@ public class FullscreenActivity extends AppCompatActivity {
     private Camera mCamera;
     private CameraPreview mCameraPreview;
     private boolean mVisible;
+    private double mAccelerator;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -74,6 +84,7 @@ public class FullscreenActivity extends AppCompatActivity {
 //        mCamera=getCameraInstance();
 //        mCameraPreview=new CameraPreview(this,mCamera);
 //        mFrameLayoutCam.addView(mCameraPreview);
+        InitAccelerator();
     }
 
     @Override
@@ -182,6 +193,8 @@ public class FullscreenActivity extends AppCompatActivity {
         mHideHandler.postDelayed(mHideRunnable, delayMillis);
     }
 
+    //// CAMERA
+
     /** Check if this device has a camera */
     private boolean checkCameraHardware(Context context) {
         if (context.getPackageManager().hasSystemFeature(PackageManager.FEATURE_CAMERA)){
@@ -203,4 +216,34 @@ public class FullscreenActivity extends AppCompatActivity {
         }
         return c; // returns null if camera is unavailable
     }
+
+    ////ACCELERATOR
+    private DeviceParameterModel mDeviceParameter=new DeviceParameterModel();
+
+    void InitAccelerator(){
+
+        SensorManager sm = (SensorManager) this.getSystemService(SENSOR_SERVICE);
+        final Sensor accelerometerSensor = sm.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
+
+
+        sm.registerListener(new SensorEventListener() {
+            @Override
+            public void onSensorChanged(SensorEvent event) {
+                mDeviceParameter.accelerator_x = event.values[SensorManager.DATA_X];
+                mDeviceParameter.accelerator_y = event.values[SensorManager.DATA_Y];
+                mDeviceParameter.accelerator_z = event.values[SensorManager.DATA_Z];
+                try {
+                    Log.d("StreetLensAccelerator", mDeviceParameter.toJson().toString());
+                }catch (JSONException e){
+
+                    e.printStackTrace();
+                }
+            }
+
+            @Override
+            public void onAccuracyChanged(Sensor sensor, int accuracy) {
+            }
+        }, accelerometerSensor, SensorManager.SENSOR_DELAY_FASTEST);
+    }
+
 }
