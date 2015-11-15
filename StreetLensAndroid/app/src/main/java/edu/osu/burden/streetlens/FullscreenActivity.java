@@ -13,7 +13,6 @@ import android.location.LocationManager;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.os.Handler;
 import android.util.Log;
 import android.view.MotionEvent;
 import android.view.SurfaceView;
@@ -388,7 +387,9 @@ public class FullscreenActivity extends AppCompatActivity {
 
 
     ////THIS IS THE BEGIN OF DRAW FUNC
-    void DrawTag(int screen_x, int screen_y,String StoreName, String Subtitle){
+    void DrawTag(float[] screen_x, float[] screen_y,String[] StoreName, String[] Subtitle){
+        FrameLayout root=(FrameLayout)findViewById(R.id.root);
+        root.addView(new MyView(FullscreenActivity.this,screen_x,screen_y,StoreName,Subtitle));
 
     }
     ////THIS IS THE END OF DRAW FUNC
