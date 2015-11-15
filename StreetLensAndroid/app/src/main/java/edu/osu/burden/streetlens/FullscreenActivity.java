@@ -71,9 +71,9 @@ public class FullscreenActivity extends AppCompatActivity {
         findViewById(R.id.dummy_button).setOnTouchListener(mDelayHideTouchListener);
 
 
-        mCamera=getCameraInstance();
-        mCameraPreview=new CameraPreview(this,mCamera);
-        mFrameLayoutCam.addView(mCameraPreview);
+//        mCamera=getCameraInstance();
+//        mCameraPreview=new CameraPreview(this,mCamera);
+//        mFrameLayoutCam.addView(mCameraPreview);
     }
 
     @Override
